@@ -55,10 +55,18 @@ module.exports = class db {
     set(path, data) {
         if (!data) throw "data must be specified"
         let str = this.init(path)
-        if (typeof data == "object") {
+        if(Array.isArray(data)){
             let str = this.init(path)
-            str += "['" + Object.keys(data)[0] + "']"
+            console.log(data)
+            eval("this.db" + str + " = ["+data+"]")
+        }
+        else if (typeof data == "object") {
+            let str = this.init(path)
+            console.log("hey")
+            str += "[" + Object.keys(data)[0] + "]"
+            console.log(str)
             if (typeof data[Object.keys(data)[0]] == "object") {
+                cconsole.log("salut")
                 let data2 = Object.values(data)[0]
                 data2.join(",")
                 data2.slice(0, -1)
@@ -75,6 +83,7 @@ module.exports = class db {
             eval("this.db" + str + " = `" + data + "`")
         }
         this.write()
+        return data
     }
     get(path) {
         this.getall(1)
@@ -101,11 +110,13 @@ module.exports = class db {
             str += "[`" + paths[i] + "`]"
             eval("if(!this.db" + str + "){this.db" + str + " = {}}")
         }
+        eval("if(!this.db"+str+")throw `the path doesnt exist`")
         eval("this.db" + str + ".push(" + dataa + ")")
         this.write()
     }
     delete(path) {
         let str = this.init(path)
+        eval("if(!this.db"+str+")throw `the path doesnt exist`")
         eval("delete this.db" + str)
         this.write()
         return true
@@ -142,5 +153,4 @@ module.exports = class db {
         return this.db
     }
 }
-
 
